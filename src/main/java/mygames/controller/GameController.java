@@ -70,8 +70,6 @@ public class GameController implements HandlerExceptionResolver {
 		this.gameService = gameService;
 	}
 
-	//добавить Dto
-
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public ModelAndView allGames(@RequestParam(defaultValue = "1") int page) {
 
@@ -93,8 +91,7 @@ public class GameController implements HandlerExceptionResolver {
 		modelAndView.addObject("gamesCount", gamesCount);
 		modelAndView.addObject("pagesCount", pagesCount);
 		this.page = page;
-		//String stringInfo  = String.format("%s",modelAndView.toString());
-		//log.info(stringInfo);
+
 		return modelAndView;
 	}
 
@@ -111,15 +108,6 @@ public class GameController implements HandlerExceptionResolver {
 
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	public ModelAndView addGame(  @ModelAttribute("game") @Valid GameDto gameDto, BindingResult bindingResult) {
-
-		//final DataBinder dataBinder = new DataBinder(gameDto);
-		//dataBinder.addValidators(gameValidator);
-		//dataBinder.validate();
-
-		//if (dataBinder.getBindingResult().hasErrors()) {
-		//	dataBinder.getBindingResult().getAllErrors().stream().
-		//			forEach(e -> log.info(messageSource.getMessage(e, Locale.getDefault())));
-		//}
 
 		if (bindingResult.hasErrors()) {
 			log.info("Есть ошибки ввода Game!");
