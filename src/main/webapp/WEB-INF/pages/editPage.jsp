@@ -63,6 +63,7 @@
         <c:set value="add" var="add"/>
         <c:set value="edit" var="edit"/>
         <input type="submit" value="${empty game.game ? add : edit}">
+
     </p>
     <p class="heading">${message}</p>
 </form>

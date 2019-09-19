@@ -2,6 +2,7 @@ package mygames.validators;
 
 import mygames.dto.GameDto;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 public class GameValidator implements Validator {
@@ -15,6 +16,7 @@ public class GameValidator implements Validator {
 	public void validate(Object target, Errors errors) {
 
 		GameDto gameDto = (GameDto) target;
+		ValidationUtils.rejectIfEmpty(errors,"game","game.empty");
 
 		if (gameDto.getYear() < 0) {
 			errors.rejectValue("Year", "value.negative");

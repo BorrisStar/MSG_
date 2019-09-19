@@ -63,4 +63,10 @@ public class GameServiceImpl implements GameService {
 	public boolean checkGame(String game) {
 		return gameDAO.checkGame(game);
 	}
+
+	@Override
+	@Transactional
+	public List<Game> newGames(int page) {
+		return gameDAO.newGames(page);
+	}
 }

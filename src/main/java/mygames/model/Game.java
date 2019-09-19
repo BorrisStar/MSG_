@@ -2,12 +2,13 @@ package mygames.model;
 
 //POJO Plain Old Java Object
 import javax.persistence.*;
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 
 @Entity
 @Table(name = "games")
-public class Game {
+public class Game implements Serializable {
 
 	@Id
 	@Column(name = "id")
@@ -46,6 +47,22 @@ public class Game {
 
 	@Column(name = "installed")
 	private boolean installed;
+
+
+//	public Developer getGameDeveloper() {
+//		return gameDeveloper;
+//	}
+//
+//	public void setGameDeveloper(Developer gameDeveloper) {
+//		this.gameDeveloper = gameDeveloper;
+//	}
+//
+//	@ManyToOne
+//	@JoinColumn(name = "gameDeveloper_id", nullable = false)
+//	private Developer gameDeveloper;
+
+	//Колонка в базе gameDeveloper_id жолжна хранить номер dev_id
+
 
 	public Game() {
 	}

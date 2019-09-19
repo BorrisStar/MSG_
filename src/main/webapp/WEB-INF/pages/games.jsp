@@ -75,9 +75,15 @@
     </c:if>
     <tr>
         <td colspan="7" class="left-side link right-side">
-            <a style="margin-right: 70px; font-size: 100%" href="<c:url value="/add"/>">
+            <a style="margin-right: 30px; font-size: 100%" href="<c:url value="/add"/>">
                 <span class="icon icon-add"></span>Add new game
             </a>
+            <a style="margin-right: 30px; font-size: 100%" href="<c:url value="/sort"/>">
+                <span class="icon icon-find"></span>New games
+            </a>
+         <!--   <button style="margin-right: 70px; font-size: 100%" type="button" value="Sort">
+                <span class="icon icon-find"></span>New games
+            </button>-->
             <c:if test="${pagesCount > 1}">
                 <c:set value="disabled" var="disabled"/>
                 <c:set value="" var="active"/>
@@ -137,7 +143,7 @@
                     &nbsp<span class="icon icon-last"></span>&nbsp
                 </a>
             </c:if>
-            <span style="margin-left: 70px; font-size: 120%">Total Number Of Games: ${gamesCount}</span>
+            <span style="margin-right: 30px; font-size: 120%">Total Games: ${gamesCount}</span>
         </td>
     </tr>
 </table>

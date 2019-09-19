@@ -76,7 +76,11 @@ a:active {
 }
 
 .icon-installed {
-    background-position: -74px 0;
+     background-position: -74px 0;
+ }
+
+.icon-find {
+    background-position: -99px 0;
 }
 
 .icon-first {
@@ -96,6 +100,11 @@ a:active {
 
 .icon-last {
     background-position: -188px 0;
+    margin: 0;
+}
+
+.icon-home {
+    background-position: -213px 0;
     margin: 0;
 }
 

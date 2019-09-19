@@ -56,7 +56,7 @@ public class WebConfig implements WebMvcConfigurer {
 	}*/
 
 
-
+//В методе viewResolver() мы создаем его реализацию и определяем где именно искать представления в webapp
 	@Bean
 	ViewResolver viewResolver() {
 		InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();

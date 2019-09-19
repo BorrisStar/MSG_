@@ -1,8 +1,6 @@
 package mygames.controller;
 
 
-
-
 import mygames.dto.GameDto;
 import mygames.mapper.GameMapper;
 import mygames.model.Game;
@@ -28,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -38,7 +37,7 @@ public class GameController implements HandlerExceptionResolver {
 	private int init;
 
 	@PostConstruct
-	public void init(){
+	public void init() {
 		log.info("Phase 1");
 		init = 100;
 	}
@@ -53,6 +52,7 @@ public class GameController implements HandlerExceptionResolver {
 	private static final Logger log = Logger.getLogger(GameController.class);
 
 	private static final ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+
 	static {
 		messageSource.setBasename("message");
 	}
@@ -70,44 +70,72 @@ public class GameController implements HandlerExceptionResolver {
 		this.gameService = gameService;
 	}
 
+//----------------------------------------------------------------------------------------------------//
+
 	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public ModelAndView allGames(@RequestParam(defaultValue = "1") int page) {
+	public ModelAndView allGames(@RequestParam(defaultValue = "1") int page, HttpStatus status) {
 
 		log.info("@PostConstruct: " + init);
 
 		log.info("Main page");
+		//log.info(status.toString());
+		List<Game> games = null;
+		try {
+			games = gameService.allGames(page);
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+		}
 
-		List<Game> games = gameService.allGames(page);
+		return getModelAndView(page, games, "games");
+	}
+
+	@RequestMapping(value = "/sort", method = RequestMethod.GET)
+	@ResponseStatus(HttpStatus.OK)
+	public ModelAndView sortGames(@RequestParam(defaultValue = "1") int page) {
+
+		log.info("New Games page");
+
+		List<Game> games = gameService.newGames(page);
+		return getModelAndView(page, games, "sort");
+	}
+
+	private ModelAndView getModelAndView(@RequestParam(defaultValue = "1") int page, List<Game> games, String gamesView) {
 		List<GameDto> gamesDto = new ArrayList<>();
-		for (Game game:games) {
+		for (Game game : games) {
 			gamesDto.add(mapper.gameToGameDto(game));
 		}
 		int gamesCount = gameService.gamesCount();
-		int pagesCount = (gamesCount + 9)/10;
+		int pagesCount = (gamesCount + 9) / 10;
 		ModelAndView modelAndView = new ModelAndView();
-		modelAndView.setViewName("games");
+		modelAndView.setViewName(gamesView);
 		modelAndView.addObject("page", page);
 		modelAndView.addObject("gamesList", gamesDto);
 		modelAndView.addObject("gamesCount", gamesCount);
 		modelAndView.addObject("pagesCount", pagesCount);
+		//model.setStatus(HttpStatus.OK);
 		this.page = page;
 
 		return modelAndView;
 	}
 
+
 	@RequestMapping(value = "/add", method = RequestMethod.GET)
 	public ModelAndView addPage(@ModelAttribute("message") String message) {
+		//@ModelAttribute("message") String message) - передача строки "message" на экран через modelAndView.addObject
 
-		String stringInfo  = String.format("Edit page %s\" ",message);
+		String stringInfo = String.format("Edit page %s\" ", message);
 		log.info(stringInfo);
 
 		ModelAndView modelAndView = new ModelAndView();
 		modelAndView.setViewName("editPage");
+
+		modelAndView.addObject("message", "Add new game!");
+		modelAndView.setStatus(HttpStatus.OK);
 		return modelAndView;
 	}
 
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
-	public ModelAndView addGame(  @ModelAttribute("game") @Valid GameDto gameDto, BindingResult bindingResult) {
+	public ModelAndView addGame(@ModelAttribute("game") @Valid GameDto gameDto, BindingResult bindingResult) {
 
 		if (bindingResult.hasErrors()) {
 			log.info("Есть ошибки ввода Game!");
@@ -115,7 +143,7 @@ public class GameController implements HandlerExceptionResolver {
 
 		Game game = mapper.gameDtoToGame(gameDto);
 
-		String stringInfo  = String.format("Add game %s\" ",game.getGame());
+		String stringInfo = String.format("Add game %s\" ", game.getGame());
 		log.info(stringInfo);
 
 		ModelAndView modelAndView = new ModelAndView();
@@ -125,17 +153,19 @@ public class GameController implements HandlerExceptionResolver {
 			modelAndView.addObject("page", page);
 			gameService.add(game);
 		} else {
-			modelAndView.addObject("message","part with game \"" + game.getGame() + "\" already exists");
+			modelAndView.addObject("message", "part with game \"" + game.getGame() + "\" already exists");
 			modelAndView.setViewName("redirect:/add");
 		}
 		return modelAndView;
 	}
 
+	//Для работы с параметрами, передаваемыми через адрес запроса  используется аннотация @PathVariable.
+	//помещает полученный объект в Spring Model через model.addAttribute() и отправляет ее  на страницу .jsp
 	@RequestMapping(value = "/edit/{id}", method = RequestMethod.GET)
 	public ModelAndView editPage(@PathVariable("id") int id,
 								 @ModelAttribute("message") String message) {
 
-		String stringInfo  = String.format("Edit page id = %d message - %s ",id, message);
+		String stringInfo = String.format("Edit page id = %d message - %s ", id, message);
 		log.info(stringInfo);
 
 		Game game = gameService.getById(id);
@@ -155,7 +185,7 @@ public class GameController implements HandlerExceptionResolver {
 
 		Game game = mapper.gameDtoToGame(gameDto);
 
-		String stringInfo  = String.format("Edit Game %s ",game.getGame());
+		String stringInfo = String.format("Edit Game %s ", game.getGame());
 		log.info(stringInfo);
 
 		ModelAndView modelAndView = new ModelAndView();
@@ -164,19 +194,19 @@ public class GameController implements HandlerExceptionResolver {
 			modelAndView.addObject("page", page);
 			gameService.edit(game);
 		} else {
-			modelAndView.addObject("message","part with game \"" + game.getGame() + "\" already exists");
-			modelAndView.setViewName("redirect:/edit/" +  + game.getId());
+			modelAndView.addObject("message", "part with game \"" + game.getGame() + "\" already exists");
+			modelAndView.setViewName("redirect:/edit/" + +game.getId());
 		}
 		return modelAndView;
 	}
 
-	@RequestMapping(value="/delete/{id}", method = RequestMethod.GET)
+	@RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
 	public ModelAndView deleteGame(@PathVariable("id") int id) {
-		String stringInfo  = String.format("Delete id = %d ",id);
+		String stringInfo = String.format("Delete id = %d ", id);
 		log.info(stringInfo);
 		ModelAndView modelAndView = new ModelAndView();
 		int gamesCount = gameService.gamesCount();
-		int page = ((gamesCount - 1) % 10 == 0 && gamesCount > 10 && this.page == (gamesCount + 9)/10) ?
+		int page = ((gamesCount - 1) % 10 == 0 && gamesCount > 10 && this.page == (gamesCount + 9) / 10) ?
 				this.page - 1 : this.page;
 		modelAndView.setViewName("redirect:/");
 		modelAndView.addObject("page", page);
@@ -184,7 +214,6 @@ public class GameController implements HandlerExceptionResolver {
 		gameService.delete(game);
 		return modelAndView;
 	}
-
 
 
 	@Override
@@ -196,7 +225,7 @@ public class GameController implements HandlerExceptionResolver {
 		resp.setContentType("text/json");
 
 		ModelAndView model = new ModelAndView(new MappingJackson2JsonView());
-		if (ex instanceof RuntimeException){
+		if (ex instanceof RuntimeException) {
 			resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			model.addObject("code", HttpStatus.INTERNAL_SERVER_ERROR.value());
 			model.addObject("message", ex.getMessage());

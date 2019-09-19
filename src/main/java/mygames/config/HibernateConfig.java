@@ -20,8 +20,9 @@ import java.util.Properties;
 @EnableTransactionManagement// позволяет использовать TransactionManager для управления транзакциями.
 @PropertySource(value = "classpath:db.properties")
 public class HibernateConfig {
-
+//Environment позволяет подключать Properties() из @PropertySource
 	private Environment environment;
+//Environment properties are populated by calling System.getProperties() and then from a resource named /hibernate.properties if it exists. System properties override properties specified in hibernate.properties.
 
 	@Autowired
 	public void setEnvironment(Environment environment) {
@@ -32,8 +33,10 @@ public class HibernateConfig {
 		Properties properties = new Properties();
 		properties.put("hibernate.dialect", environment.getRequiredProperty("hibernate.dialect"));
 		properties.put("hibernate.show_sql", environment.getRequiredProperty("hibernate.show_sql"));
+		//properties.put("hibernate.hbm2ddl.auto", environment.getRequiredProperty("hibernate.hbm2ddl.auto"));
 		return properties;
 	}
+//В context.xml должны быть определены бины transactionManager, dataSource и entityManagerFactory.
 
 	@Bean
 	public DataSource dataSource() {//используется для создания соединения с БД
